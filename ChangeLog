@@ -1,0 +1,5 @@
+2004-10-11  Lauri Leukkunen <lauri.leukkunen@nokia.com>
+
+	* configure.ac, xsp.pc.in, Makefile.am:
+	Complete autoconf work
+

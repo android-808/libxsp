@@ -1,0 +1,76 @@
+		Xsp
+	  Xsp Extension
+	    Version 1.0
+
+Author:	Lauri Leukkunen <lauri.leukkunen@nokia.com>
+Date:	2005-01-05
+
+There are two users for Xsp: end-user touchscreen calibration application,
+and the media player. Currently only the media player part is 
+documented here.
+
+
+Xsp functions and events relevant for Media Player (defined in X11/extensions/Xsp.h)
+
+
+Functions
+*********
+
+Status XSPRegisterDSPArea(Display *dpy, int x, int y, int width, int height);
+Status XSPCancelDSPArea(Display *dpy);
+
+
+Events
+******
+
+typedef struct {
+    int type;			/* event base */
+    unsigned long serial;
+    Bool send_event;
+    Display *display;
+} XSPDSPStoppedEvent;
+
+
+Idea is to call XSPRegisterDSPArea before starting video playback and then wait
+for XSPDSPStoppedEvent, which would indicate that X decided to stop the DSP.
+
+After video playback is complete (there was no XSPDSPStoppedEvent), XSPCancelDSPArea 
+should be called to tell X to no longer monitor the screen area for "intrusions".
+
+If the DSP was stopped and the event received, there is no need to call XSPCancelDSPArea
+(X automatically stops monitoring the area in this case to prevent unnecessarily generating 
+spurious events).
+
+Sample code to "initialize" Xsp extension in the client program:
+
+#include <X11/X.h>
+#include <X11/Xlib.h>
+
+#include <X11/extensions/Xsp.h>
+
+#include <stdio.h>
+
+int main (int argc, char **argv)
+{
+	Display *dpy;
+	int event_base, error_base;
+	int major, minor;
+
+	dpy = XOpenDisplay(NULL);
+	if (!XSPQueryExtension(dpy, &event_base, &error_base, &major, &minor))
+	{
+		fprintf(stderr, "XSP extension not available\n");
+		XCloseDisplay(dpy);
+		return 1;
+	}
+
+	printf("XSP extension found:\n");
+	printf("  event_base: %d\n", event_base);
+	printf("  error_base: %d\n", error_base);
+	printf("       major: %d\n", major);
+	printf("       minor: %d\n", minor);
+
+	XCloseDisplay(dpy);
+	return 0;
+}
+
