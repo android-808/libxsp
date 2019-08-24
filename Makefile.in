@@ -220,7 +220,7 @@ libXspinclude_HEADERS = Xsp.h
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = xsp.pc
 testxsp_SOURCES = testxsp.c
-testxsp_LDADD = libXsp.la $(X_LIBS)
+testxsp_LDADD = libXsp.la $(X_LIBS) -lX11
 MAINTAINERCLEANFILES = Makefile.in
 EXTRA_DIST = xsp.pc.in autogen.sh
 all: config.h
